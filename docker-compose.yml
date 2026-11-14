@@ -1,0 +1,31 @@
+# docker-compose.yml – WordPress + MariaDB (GitHub Codespaces) – L1 G2
+# Uruchomienie:  docker compose up -d   →   otwórz przekierowany port 8080 i zainstaluj WordPress po polsku.
+# Hasła poniżej są TYLKO do laboratorium (środowisko jednorazowe, niedostępne publicznie). Nie używaj ich nigdzie indziej.
+services:
+  db:
+    image: mariadb:11
+    restart: unless-stopped
+    environment:
+      MARIADB_DATABASE: wordpress
+      MARIADB_USER: wp
+      MARIADB_PASSWORD: Zmien-Mnie-Lab-2026      # zmienione względem startera (wp_haslo)
+      MARIADB_ROOT_PASSWORD: Zmien-Root-Lab-2026
+    volumes:
+      - db_data:/var/lib/mysql
+
+  wordpress:
+    image: wordpress:php8.3-apache
+    restart: unless-stopped
+    depends_on: [db]
+    ports:
+      - "8080:80"                                # port przekierowany przez Codespaces
+    environment:
+      WORDPRESS_DB_HOST: db                      # nazwa usługi = nazwa hosta w sieci wewnętrznej compose
+      WORDPRESS_DB_USER: wp
+      WORDPRESS_DB_PASSWORD: Zmien-Mnie-Lab-2026 # musi być takie samo jak MARIADB_PASSWORD
+      WORDPRESS_DB_NAME: wordpress
+    volumes:
+      - ./wp-content:/var/www/html/wp-content    # motywy/wtyczki w repozytorium
+
+volumes:
+  db_data:
